@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 dockerhub.lemz.t/library/astralinux:ce2.12.22-gcc11.3.0-qt5.15.6-cmake3.22.6
+FROM dockerhub.lemz.t/library/astralinux:ce2.12.22-gcc11.3.0-qt5.15.6-cmake3.22.6
 RUN echo "deb http://dl.astralinux.ru/astra/frozen/2.12_x86-64/2.12.22/repository/ orel main contrib non-free" >> /etc/apt/sources.list 
 RUN apt-get update && apt-get -y install debian-archive-keyring dirmngr
 RUN echo "deb [trusted=yes] http://deb.debian.org/debian bullseye main" > /etc/apt/sources.list
