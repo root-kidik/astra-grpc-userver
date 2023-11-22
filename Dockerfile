@@ -19,4 +19,7 @@ COPY ./third_party ./third_party
 RUN cd third_party/backtrace/libbacktrace && cmake .. && cmake --build . && make install 
 RUN export PATH="/usr/local/lib:/usr/local/include:/usr/local/include/libbacktrace:$PATH" 
 RUN make build-debug -j16
+RUN cp ./third_party/backtrace/libbacktrace/libbacktrace.so ./build_debug/greeter_service
+RUN chown -R admin /app 
+USER admin
 RUN make test-debug -j16
