@@ -1,25 +1,20 @@
-FROM dockerhub.lemz.t/library/astralinux:ce2.12.22-gcc11.3.0-qt5.15.6-cmake3.22.6
-RUN echo "deb http://dl.astralinux.ru/astra/frozen/2.12_x86-64/2.12.22/repository/ orel main contrib non-free" >> /etc/apt/sources.list 
-RUN apt-get update && apt-get -y install debian-archive-keyring dirmngr
-RUN echo "deb [trusted=yes] http://deb.debian.org/debian bullseye main" > /etc/apt/sources.list
-RUN apt update
-RUN apt -y -o Dpkg::Options::="--force-confnew" upgrade 
-RUN apt -f install
-RUN apt -y install ccache cmake git libbenchmark-dev libboost-filesystem1.74-dev libboost-iostreams1.74-dev libboost-locale1.74-dev libboost-program-options1.74-dev libboost-regex1.74-dev libboost1.74-dev libbson-dev libc-ares-dev libcctz-dev libcrypto++-dev libcurl4-openssl-dev libev-dev libfmt-dev libgmock-dev libgrpc-dev libgrpc++-dev libgrpc++1 libgtest-dev libhiredis-dev libhttp-parser-dev libjemalloc-dev libkrb5-dev libldap2-dev libmongoc-dev libnghttp2-dev libpq-dev libprotoc-dev libssl-dev libyaml-cpp-dev postgresql-13 postgresql-server-dev-13 protobuf-compiler-grpc python3-dev python3-jinja2 python3-protobuf python3-virtualenv python3-voluptuous python3-yaml redis-server virtualenv zlib1g-dev
-RUN useradd admin && su admin
-WORKDIR /app
-COPY ./src ./src 
-COPY ./configs ./configs
-COPY ./proto ./proto
-COPY ./tests ./tests
+FROM --platform=linux/amd64  dockerhub.lemz.t/library/astralinux@sha256:732e83b835cb97bdb812c635c444695ed5d2c6c4edaf33197cdfa446957b31c8
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" >> /etc/apt/sources.list 
+RUN echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >> /etc/apt/sources.list 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793 0E98404D386FA1D9 648ACFD622F3D138
+RUN apt -y update && apt -y -o Dpkg::Options::="--force-confnew" upgrade
+RUN apt -y install ccache cmake git libbenchmark-dev libboost-filesystem1.67-dev libboost-iostreams1.67-dev libboost-locale1.67-dev libboost-program-options1.67-dev libboost-regex1.67-dev libboost1.67-dev libbson-dev libc-ares-dev libcctz-dev libcrypto++-dev libcurl4-openssl-dev libev-dev libfmt-dev libgmock-dev libgrpc-dev libgrpc++-dev libgrpc++1 libgtest-dev  libhttp-parser-dev libjemalloc-dev libkrb5-dev libldap2-dev  libnghttp2-dev libpq-dev libprotoc-dev libssl-dev libyaml-cpp-dev protobuf-compiler-grpc python3-dev python3-jinja2 python3-protobuf python3-virtualenv python3-voluptuous python3-yaml  virtualenv zlib1g-dev g++
+RUN apt -y install boost1.74/buster-backports cmake/buster-backports
+RUN useradd -ms /bin/bash admin
+USER admin
+WORKDIR /home/admin
+COPY ./configs/ ./configs/
+COPY ./proto/ ./proto/
+COPY ./src/ ./src/
+COPY ./third_party/ ./third_party/
+COPY ./tests/ ./tests/
 COPY ./Makefile ./Makefile
 COPY ./Makefile.local ./Makefile.local
 COPY ./CMakeLists.txt ./CMakeLists.txt
-COPY ./third_party ./third_party
-RUN cd third_party/backtrace/libbacktrace && cmake .. && cmake --build . && make install 
-RUN export PATH="/usr/local/lib:/usr/local/include:/usr/local/include/libbacktrace:$PATH" 
-RUN make build-debug -j16
-RUN cp ./third_party/backtrace/libbacktrace/libbacktrace.so ./build_debug/greeter_service
-RUN chown -R admin /app 
-USER admin
-RUN make test-debug -j16
+RUN make build-debug
+CMD sh
