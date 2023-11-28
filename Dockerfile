@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64  dockerhub.lemz.t/library/astralinux@sha256:732e83b835cb97bdb812c635c444695ed5d2c6c4edaf33197cdfa446957b31c8
+FROM greeter-service:latest
 RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" >> /etc/apt/sources.list 
 RUN echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >> /etc/apt/sources.list 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793 0E98404D386FA1D9 648ACFD622F3D138
@@ -17,4 +17,6 @@ COPY ./Makefile ./Makefile
 COPY ./Makefile.local ./Makefile.local
 COPY ./CMakeLists.txt ./CMakeLists.txt
 RUN make build-debug
-CMD sh
+
+# 1. git submodule update --init
+# 2. docker run -d -t greeter-service
