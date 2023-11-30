@@ -1,5 +1,5 @@
-FROM greeter-service:latest
-RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" >> /etc/apt/sources.list 
+FROM dockerhub.lemz.t/library/astralinux:se1.7 
+RUN echo "deb http://deb.debian.org/debian buster main contrib non-free" > /etc/apt/sources.list 
 RUN echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >> /etc/apt/sources.list 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793 0E98404D386FA1D9 648ACFD622F3D138
 RUN apt -y update && apt -y -o Dpkg::Options::="--force-confnew" upgrade
@@ -17,6 +17,8 @@ COPY ./Makefile ./Makefile
 COPY ./Makefile.local ./Makefile.local
 COPY ./CMakeLists.txt ./CMakeLists.txt
 RUN make build-debug
+CMD sh
 
 # 1. git submodule update --init
-# 2. docker run -d -t greeter-service
+# 2. docker build -t greeter-service . 
+# 3. docker run -d -t greeter-service
